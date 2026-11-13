@@ -1,8 +1,6 @@
 name: Solana Verifiable Build Verification
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       cluster:
