@@ -1,0 +1,22 @@
+[package]
+name = "mock-marinade"
+version = "0.1.0"
+description = "TEST-ONLY mock of Marinade's deposit/liquid_unstake CPI surface"
+edition = "2021"
+license = "Apache-2.0"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "mock_marinade"
+
+[features]
+no-entrypoint = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+default = []
+
+[dependencies]
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
+
+[lints]
+workspace = true

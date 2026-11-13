@@ -1,0 +1,15 @@
+[package]
+name = "fuzz_0"
+version = "0.1.0"
+description = "Trident Fuzz target for Cypher Anchor Smart Contract"
+edition = "2021"
+
+[dependencies]
+trident-client = "0.12.0"
+honggfuzz = "0.5"
+anchor-lang = "0.31.1"
+
+[dependencies.cypher]
+path = "../../programs/cypher"
+features = ["no-entrypoint"]
+

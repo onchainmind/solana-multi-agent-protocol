@@ -1,0 +1,44 @@
+name: Fuzz Testing (libFuzzer)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Run extended fuzz testing weekly on Sundays
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: agent-cipher
+
+jobs:
+  proptest-and-fuzz-smoke:
+    name: Property & Fuzz Targets Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Install Nightly Rust
+        uses: dtolnay/rust-toolchain@7b7640457d930a38d363e8c77361c221a8154eed # nightly
+        with:
+          toolchain: nightly
+
+      - name: Run Deterministic Property Tests
+        run: cargo test -p cypher --lib
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz --locked
+
+      - name: libFuzzer Smoke Run (Math Invariants)
+        run: cargo +nightly fuzz run fuzz_math -- -max_total_time=30
+        working-directory: agent-cipher/fuzz
+
+      - name: libFuzzer Smoke Run (Pyth Parser)
+        run: cargo +nightly fuzz run fuzz_parse_price_update -- -max_total_time=30
+        working-directory: agent-cipher/fuzz
+

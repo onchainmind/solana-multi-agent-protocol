@@ -1,0 +1,15 @@
+# Configuration for cargo-audit (RustSec Advisory Database)
+
+[advisories]
+ignore = [
+    # RUSTSEC-2020-0071: Potential segfault in localtime_r on chrono <0.4.20
+    # Chrono is an indirect transitive dependency in solana-program/anchor-lang.
+    "RUSTSEC-2020-0071",
+]
+informational_warnings = ["unmaintained", "notice"]
+severity_threshold = "low"
+
+[output]
+deny = ["warnings"]
+format = "terminal"
+

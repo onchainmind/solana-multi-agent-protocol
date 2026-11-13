@@ -1,0 +1,27 @@
+[workspace]
+members = [
+    "programs/cypher",
+    "programs/mock-marinade",
+    "programs/mock-jupiter",
+]
+resolver = "2"
+exclude = ["fuzz"]
+
+[profile.release]
+overflow-checks = true
+lto = "fat"
+codegen-units = 1
+
+[profile.release.build-override]
+opt-level = 3
+
+[profile.test]
+overflow-checks = true
+
+# Anchor 0.31 macro expansion uses cfgs (solana, cpi, anchor-debug, ...) and
+# an AccountInfo::realloc call that newer rustc/clippy flag. The flags below
+# silence ONLY those macro-generated false positives; all source-level
+# warnings in this workspace remain denied in CI.
+[workspace.lints.rust]
+unexpected_cfgs = { level = "allow" }
+deprecated = { level = "allow" }

@@ -1,0 +1,29 @@
+name: Trident Invariant Fuzzing (Ackee Blockchain)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Run deep fuzzing run weekly on Saturday nights
+    - cron: '0 23 * * 6'
+
+permissions:
+  contents: read
+
+jobs:
+  trident-fuzz:
+    name: Trident Invariant State Machine Fuzz (Honggfuzz)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Pull Official Ackee Blockchain Trident Image
+        run: docker pull ackeeblockchain/trident:latest
+
+      - name: Execute Trident Invariant Fuzzing
+        run: |
+          cd agent-cipher
+          docker run --rm -v $(pwd):/workspace ackeeblockchain/trident:latest trident fuzz run fuzz_0 --exit-on-crash
+

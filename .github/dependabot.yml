@@ -1,0 +1,137 @@
+version: 2
+updates:
+  # GitHub Actions workflow dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Agent 1: Cypher
+  - package-ecosystem: "cargo"
+    directory: "/agent-cipher"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(cipher-rust)"
+    labels:
+      - "dependencies"
+      - "rust"
+  - package-ecosystem: "npm"
+    directory: "/agent-cipher"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(cipher-npm)"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Agent 2: Trinity
+  - package-ecosystem: "cargo"
+    directory: "/agent-trinity"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(trinity-rust)"
+    labels:
+      - "dependencies"
+      - "rust"
+  - package-ecosystem: "npm"
+    directory: "/agent-trinity"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(trinity-npm)"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Agent 3: Morpheus
+  - package-ecosystem: "cargo"
+    directory: "/agent-morpheus"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(morpheus-rust)"
+    labels:
+      - "dependencies"
+      - "rust"
+  - package-ecosystem: "npm"
+    directory: "/agent-morpheus"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(morpheus-npm)"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Agent 4: Oracle
+  - package-ecosystem: "cargo"
+    directory: "/agent-oracle"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(oracle-rust)"
+    labels:
+      - "dependencies"
+      - "rust"
+  - package-ecosystem: "npm"
+    directory: "/agent-oracle"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(oracle-npm)"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Agent 5: Neo
+  - package-ecosystem: "cargo"
+    directory: "/agent-neo"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(neo-rust)"
+    labels:
+      - "dependencies"
+      - "rust"
+  - package-ecosystem: "npm"
+    directory: "/agent-neo"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(neo-npm)"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Agent 6: Quantum
+  - package-ecosystem: "cargo"
+    directory: "/agent-quantum"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(quantum-rust)"
+    labels:
+      - "dependencies"
+      - "rust"
+  - package-ecosystem: "npm"
+    directory: "/agent-quantum"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(quantum-npm)"
+    labels:
+      - "dependencies"
+      - "javascript"

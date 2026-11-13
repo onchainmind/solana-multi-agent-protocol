@@ -1,0 +1,41 @@
+# Solana and Rust build artifacts
+.anchor
+target/
+node_modules/
+dist/
+build/
+.DS_Store
+Thumbs.db
+*.log
+test-ledger/
+test-ledger.log
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Keypairs and private credentials (STRICT - NEVER COMMIT)
+*.keypair.json
+*keypair*.json
+!tests/fixtures/mock_*.json
+*.secret
+*.key
+*.pem
+id.json
+agent-identity.json
+.keys/
+wallets/
+.wallets/
+
+# Program build-time keypairs
+programs/cypher/cypher-keypair.json
+programs/cypher/keypair.json
+programs/mock-marinade/mock-marinade-keypair.json
+programs/mock-jupiter/mock-jupiter-keypair.json
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo

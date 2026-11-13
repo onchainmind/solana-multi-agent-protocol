@@ -1,0 +1,51 @@
+# Semgrep ruleset for Cypher Solana Smart Contracts and TypeScript Agents
+
+rules:
+  - id: solana-anchor-unchecked-account-comment
+    languages: [rust]
+    severity: WARNING
+    message: "Anchor UncheckedAccount must always be preceded by a safety doc-comment explaining validation."
+    patterns:
+      - pattern: "UncheckedAccount<'info>"
+      - pattern-not-inside: |
+          /// CHECK: ...
+          pub $ACCOUNT: UncheckedAccount<'info>
+
+  - id: solana-anchor-checked-math-required
+    languages: [rust]
+    severity: WARNING
+    message: "DeFi token math should use checked arithmetic (checked_add, checked_sub, checked_mul, checked_div) to prevent wrapping."
+    pattern-regex: '(?<!checked_)\b(amount|shares|lamports|balance|fee)\s*(\+|\-|\*|\/)\s*'
+
+  - id: ts-no-secret-logging
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: "Do not log private keys, secretKey, or credentials to console or external loggers."
+    patterns:
+      - pattern-either:
+          - pattern: "console.log(..., $KEY.secretKey, ...)"
+          - pattern: "console.error(..., $KEY.secretKey, ...)"
+          - pattern: "console.log(..., <$TYPE>$SECRET, ...)"
+
+  - id: ts-child-process-command-injection
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: "Do not use execSync with string concatenation. Use spawnSync with arguments array and shell: false."
+    patterns:
+      - pattern-either:
+          - pattern: "execSync($CMD + ...)"
+          - pattern: "execSync(`...${...}...`)"
+          - pattern: "exec($CMD + ...)"
+          - pattern: "exec(`...${...}...`)"
+
+  - id: ts-rpc-url-protocol-validation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: "Ensure Solana RPC URLs are validated to strictly use http: or https: protocols."
+    patterns:
+      - pattern: "new Connection($URL, ...)"
+      - pattern-not-inside: |
+          ...
+          parseRpcUrl(...)
+          ...
+
