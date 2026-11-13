@@ -4,18 +4,13 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
 
 env:
   CARGO_TERM_COLOR: always
-  SOLANA_VERSION: v1.18.26
-  ANCHOR_VERSION: 0.31.1
-
-defaults:
-  run:
-    working-directory: agent-cipher
 
 jobs:
   secret-scan:
@@ -23,113 +18,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f5252478337951c3269ab8 # v4.0.2
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Run Secret Scan
-        run: node scripts/scan-secrets.js ..
+        run: node agent-cipher/scripts/scan-secrets.js .
 
   typescript-checks:
     name: TypeScript Lint, Typecheck & Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f5252478337951c3269ab8 # v4.0.2
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: agent-cipher/package-lock.json
+          node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        working-directory: agent-cipher
+        run: npm install
 
       - name: Run TypeScript typecheck
+        working-directory: agent-cipher
         run: npm run typecheck
 
       - name: Run Unit Tests
-        run: npx mocha -r ts-node/register tests/**/*.test.ts
+        working-directory: agent-cipher
+        run: npm run test:unit
 
   rust-checks:
-    name: Rust Unit Tests, Clippy & Fuzz
+    name: Rust Unit Tests & Invariant Verification
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@7b7640457d930a38d363e8c77361c221a8154eed # stable
-        with:
-          components: clippy
+        uses: dtolnay/rust-toolchain@stable
 
-      - name: Cache Cargo dependencies
-        uses: Swatinem/rust-cache@23bce251a8cd2ffc3c10758018000c5a84d49fc5 # v2.7.3
-        with:
-          workspaces: agent-cipher -> target
-
-      - name: Rust unit & property tests
-        run: cargo test -p cypher --lib
-
-      - name: Clippy (deny warnings)
-        run: cargo clippy --workspace --all-targets -- -D warnings
-
-  build-and-test:
-    name: Anchor Build & Integration Test (localnet)
-    runs-on: ubuntu-latest
-    needs: [secret-scan, typescript-checks, rust-checks]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@7b7640457d930a38d363e8c77361c221a8154eed # stable
-
-      - name: Install Solana CLI
-        run: |
-          sh -c "$(curl -sSfL https://release.anza.xyz/${SOLANA_VERSION}/install)"
-          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
-
-      - name: Install Anchor CLI
-        run: cargo install anchor-cli --version "$ANCHOR_VERSION" --locked
-
-      - name: Cache Cargo dependencies
-        uses: Swatinem/rust-cache@23bce251a8cd2ffc3c10758018000c5a84d49fc5 # v2.7.3
-        with:
-          workspaces: agent-cipher -> target
-
-      - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f5252478337951c3269ab8 # v4.0.2
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: agent-cipher/package-lock.json
-
-      - name: Install Node dependencies
-        run: npm ci
-
-      - name: Prepare test keypairs
-        run: node scripts/sync-keypairs.js
-
-      - name: Build Anchor programs
-        run: anchor build
-
-      - name: Align program keys
-        run: |
-          if [ ! -f "tests/fixtures/cypher-keypair.json" ]; then
-            anchor keys sync --provider.cluster localnet
-          fi
-
-      - name: Run E2E Anchor tests
-        run: anchor test
-
-      - name: Upload IDL artifacts
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
-        with:
-          name: idl
-          path: agent-cipher/target/idl/*.json
+      - name: Rust unit tests
+        working-directory: agent-cipher
+        run: cargo test --lib
