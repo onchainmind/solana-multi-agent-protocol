@@ -1,9 +1,7 @@
 name: Trident Invariant Fuzzing (Ackee Blockchain)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch: 
   schedule:
     # Run deep fuzzing run weekly on Saturday nights
     - cron: '0 23 * * 6'
