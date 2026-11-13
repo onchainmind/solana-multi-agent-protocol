@@ -1,9 +1,7 @@
 name: Fuzz Testing (libFuzzer)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch: 
   schedule:
     # Run extended fuzz testing weekly on Sundays
     - cron: '0 0 * * 0'
