@@ -1,0 +1,42 @@
+# libFuzzer harnesses for the cypher program (optional deep-fuzz tooling).
+#
+# The same code paths are covered by the fast in-suite fuzz tests
+# (`cargo test -p cypher --lib`); these harnesses exist for auditors
+# who want coverage-guided fuzzing:
+#
+#   cargo install cargo-fuzz
+#   cargo +nightly fuzz run fuzz_parse_price_update -- -max_total_time=600
+#   cargo +nightly fuzz run fuzz_math             -- -max_total_time=600
+#
+# This directory is NOT part of the SBF workspace and never touches the
+# deployed program.
+
+[package]
+name = "cypher-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.cypher]
+path = "../programs/cypher"
+features = ["no-entrypoint"]
+
+[[bin]]
+name = "fuzz_parse_price_update"
+path = "fuzz_targets/fuzz_parse_price_update.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_math"
+path = "fuzz_targets/fuzz_math.rs"
+test = false
+doc = false
+bench = false

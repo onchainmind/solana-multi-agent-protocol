@@ -1,0 +1,40 @@
+name: Solana Verifiable Build Verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: 'Solana cluster to verify against'
+        required: true
+        default: 'mainnet'
+        type: choice
+        options:
+          - mainnet
+          - devnet
+
+permissions:
+  contents: read
+
+jobs:
+  verifiable-build:
+    name: Build & Verify Deterministic Binary Hash
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install solana-verify CLI
+        run: cargo install solana-verify --locked
+
+      - name: Build Verifiable Program Image
+        run: |
+          cd agent-cipher
+          solana-verify build --library-name cypher
+
+      - name: Print Deterministic SHA-256 Hash
+        run: |
+          cd agent-cipher
+          solana-verify get-executable-hash target/deploy/cypher.so

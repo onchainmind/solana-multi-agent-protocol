@@ -1,0 +1,21 @@
+# Trident Fuzz Configuration for Cypher Smart Contract
+# Developed by Ackee Blockchain
+
+[fuzz]
+# Fuzzing target directory
+fuzzing_targets = ["trident-tests/fuzz_0"]
+
+# Maximum total execution time in seconds (0 = infinite)
+timeout = 600
+
+# Number of concurrent fuzzing threads
+threads = 4
+
+# Exit immediately if a crash is discovered
+exit_on_crash = true
+
+[programs.cypher]
+# Path to the Anchor program under test
+path = "programs/cypher"
+address = "26RUtGoZz6Nptsf3p1fwK48ydu4PNQ2FenJGNhHqrXMC"
+

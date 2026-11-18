@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  secret-scan:
+    name: Secret & Credential Exposure Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Secret Scan
+        run: node agent-cipher/scripts/scan-secrets.js .
+
+  typescript-checks:
+    name: TypeScript Lint, Typecheck & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: agent-cipher
+        run: npm install
+
+      - name: Run TypeScript typecheck
+        working-directory: agent-cipher
+        run: npm run typecheck
+
+      - name: Run Unit Tests
+        working-directory: agent-cipher
+        run: npm run test:unit
+
+  rust-checks:
+    name: Rust Unit Tests & Invariant Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust unit tests
+        working-directory: agent-cipher
+        run: cargo test --lib
